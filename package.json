@@ -4,10 +4,10 @@
   "main": "index.js",
   
   "scripts": {
-  "test": "jest",
-  "build": "npx rimraf dist && mkdir dist && cp index.js dist/"
-}
-,
+    "test": "jest",
+    "build": "if exist dist rmdir /s /q dist && mkdir dist && copy index.js dist\\"
+  },
+
   "keywords": [],
   "author": "",
   "license": "ISC",

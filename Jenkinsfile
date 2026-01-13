@@ -30,23 +30,23 @@ pipeline {
 
         stage('Package') {
             steps {
-                bat 'tar -czf node-calculator.tar.gz dist'
+                bat 'powershell Compress-Archive dist node-calculator.zip'
             }
         }
 
         stage('Archive') {
             steps {
-                archiveArtifacts artifacts: '*.tar.gz', fingerprint: true
+                archiveArtifacts artifacts: 'node-calculator.zip', fingerprint: true
             }
         }
     }
 
     post {
         success {
-            echo '✅ Node pipeline completed successfully'
+            echo '✅ CI pipeline completed successfully'
         }
         failure {
-            echo '❌ Pipeline failed'
+            echo '❌ CI pipeline failed'
         }
     }
 }
