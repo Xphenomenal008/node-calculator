@@ -1,67 +1,40 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'node18'   // Configure this in Jenkins → Global Tool Config
-    }
-
-    environment {
-        APP_NAME = "node-calculator"
-    }
-
     stages {
 
-        stage('1. Validate') {
+        stage('Validate') {
             steps {
-                sh 'node -v'
-                sh 'npm -v'
+                bat 'node -v'
+                bat 'npm -v'
             }
         }
 
-        stage('2. Clean') {
+        stage('Install Dependencies') {
             steps {
-                sh 'rm -rf node_modules dist || true'
+                bat 'npm install'
             }
         }
 
-        stage('3. Install Dependencies') {
+        stage('Test') {
             steps {
-                sh 'npm install'
+                bat 'npm test'
             }
         }
 
-        stage('4. Lint (Optional Quality Gate)') {
+        stage('Build') {
             steps {
-                echo 'Skipping lint for now'
+                bat 'npm run build'
             }
         }
 
-        stage('5. Test') {
+        stage('Package') {
             steps {
-                sh 'npm test'
+                bat 'tar -czf node-calculator.tar.gz dist'
             }
         }
 
-        stage('6. Build') {
-            steps {
-                sh 'npm run build'
-            }
-        }
-
-        stage('7. Verify Build') {
-            steps {
-                sh 'test -d dist'
-                sh 'ls -l dist'
-            }
-        }
-
-        stage('8. Package Artifact') {
-            steps {
-                sh 'tar -czf ${APP_NAME}.tar.gz dist'
-            }
-        }
-
-        stage('9. Archive Artifact') {
+        stage('Archive') {
             steps {
                 archiveArtifacts artifacts: '*.tar.gz', fingerprint: true
             }
@@ -70,13 +43,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Pipeline succeeded: code is tested, built, and packaged'
+            echo '✅ Node pipeline completed successfully'
         }
         failure {
-            echo '❌ Pipeline failed: investigate stage logs'
-        }
-        always {
-            cleanWs()
+            echo '❌ Pipeline failed'
         }
     }
 }
